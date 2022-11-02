@@ -5,9 +5,6 @@ Parameters:
   ID:
     Description: Unique identifier.
     Type: String
-  KEYNAME:
-    Description: Unique identifier.
-    Type: String
 
 Resources:
   InstanceSecurityGroup:

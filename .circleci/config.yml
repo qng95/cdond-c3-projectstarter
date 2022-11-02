@@ -140,19 +140,38 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - project/.circleci/ansible/inventory.txt  
+            - project/.circleci/ansible/inventory.txt
+  
+  configure-infrastructure:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - rum:
+          name: Install dependencies
+          command: |
+            yum install -y tar gzip 
+      - run:
+          name: Install ansible
+          command: |
+            python3 -m pip install ansible
+      - run:
+          name: Check Ansible install
+          command: |
+            ansible --version
 
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - scan-backend:
-          requires: [build-backend]
-      - deploy-infrastructure
+      #- build-frontend
+      #- build-backend
+      #- test-frontend:
+      #    requires: [build-frontend]
+      #- test-backend:
+      #    requires: [build-backend]
+      #- scan-frontend:
+      #    requires: [build-frontend]
+      # - scan-backend:
+      #    requires: [build-backend]
+      # - deploy-infrastructure
+      - configure-infrastructure

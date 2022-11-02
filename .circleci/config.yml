@@ -111,6 +111,10 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install dependencies
+          command:
+            sudo apt install tar,gzip
+      - run:
           name: Ensure back-end infrastructure exists
           command: |
             aws cloudformation deploy \

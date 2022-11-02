@@ -111,17 +111,13 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Check environment variable
-          command: |
-            echo "${CIRCLE_WORKFLOW_ID:0:7}"
-      - run:
           name: Ensure back-end infrastructure exists
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
               --tags project=udapeople \
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" KEYNAME="udapeople"
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
       - run:
           name: Ensure front-end infrastructure exist
           command: |

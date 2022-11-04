@@ -147,7 +147,7 @@ jobs:
       - image: python:3.11.0-alpine3.16
     steps:
       - attach_workspace:
-          at: ~/project
+          at: ~/
       - add_ssh_keys:
           fingerprints: ["68:65:cf:30:00:3e:38:71:95:1a:20:c7:62:64:34:fb"]
       - run:
@@ -161,7 +161,7 @@ jobs:
       - run:
           name: Configure server
           command: |
-            cd ~/project/.circleci/ansible/ && \
+            cd project/.circleci/ansible/ && \
             cat inventory.txt && \
             ansible-playbook -i inventory.txt configure-server.yml
 

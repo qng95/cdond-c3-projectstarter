@@ -165,6 +165,7 @@ jobs:
           name: Configure server
           working_directory: ~/project/.circleci/ansible/
           command: |
+            cat inventory.txt %&& \
             ansible-playbook -i inventory.txt configure-server.yml
 
 workflows:

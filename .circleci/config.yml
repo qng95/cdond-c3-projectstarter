@@ -147,6 +147,8 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
+      - add_ssh_keys:
+          fingerprints: ["68:65:cf:30:00:3e:38:71:95:1a:20:c7:62:64:34:fb"]
       - run:
           name: Install dependencies
           command: |
@@ -159,19 +161,24 @@ jobs:
           name: Check Ansible install
           command: |
             ansible --version
+      - run:
+          name: Configure server
+          working_directory: ~/project/.circleci/ansible/
+          command: |
+            ansible-playbook -i inventory.txt configure-server.yml
 
 workflows:
   default:
     jobs:
-      #- build-frontend
-      #- build-backend
-      #- test-frontend:
-      #    requires: [build-frontend]
-      #- test-backend:
-      #    requires: [build-backend]
-      #- scan-frontend:
-      #    requires: [build-frontend]
-      # - scan-backend:
-      #    requires: [build-backend]
-      # - deploy-infrastructure
+      - build-frontend
+      - build-backend
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
+      - scan-backend:
+          requires: [build-backend]
+      - deploy-infrastructure
       - configure-infrastructure

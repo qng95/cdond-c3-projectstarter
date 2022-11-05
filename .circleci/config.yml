@@ -202,7 +202,7 @@ jobs:
           name: Install dependencies
           command: |
             curl --silent --location https://rpm.nodesource.com/setup_13.x | bash -
-            yum install -y tar gzip nodejs python3 ansible
+            yum install -y tar gzip nodejs python3
       - attach_workspace:
           at: ~/
       - run:
@@ -237,7 +237,8 @@ jobs:
           name: Install dependencies
           command: |
             curl --silent --location https://rpm.nodesource.com/setup_13.x | bash -
-            yum install -y tar gzip nodejs python3 ansible
+            yum install -y tar gzip nodejs python3
+            pip install --global ansible
       - attach_workspace:
           at: ~/
       - run:

@@ -1,4 +1,8 @@
 ---
+- name: "Prepare"
+  become: true
+  raw: mkdir -p /var/lib/backend/
+
 - name: "Unpack"
   become: true
   unarchive:

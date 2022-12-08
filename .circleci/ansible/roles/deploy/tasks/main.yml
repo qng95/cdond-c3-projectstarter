@@ -3,6 +3,10 @@
   become: true
   raw: mkdir -p /var/lib/backend/
 
+- name: "Check"
+  become: true
+  shell: "env"
+
 - name: "Unpack"
   become: true
   unarchive:

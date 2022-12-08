@@ -6,6 +6,7 @@
 - name: "Check"
   become: true
   shell: "env"
+  register: env_info
 
 - name: "Unpack"
   become: true
@@ -15,4 +16,13 @@
 
 - name: "start pm2"
   become: true
-  shell: cd /var/lib/backend && npm install && npm run start:prod
+  shell: |
+    npm install
+    pm2 stop default
+    pm2 start npm -- start
+  args:
+    chdir: /var/lib/backend
+  register: run_info
+  
+- debug:
+    msg: "{{run_info.stdout_lines}}"

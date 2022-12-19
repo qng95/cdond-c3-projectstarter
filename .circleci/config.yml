@@ -295,7 +295,8 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            yum install -y tar gzip python3
+            curl --silent --location https://rpm.nodesource.com/setup_13.x | bash -
+            yum install -y tar gzip python3 nodejs
       - attach_workspace:
           at: ~/
       - run:

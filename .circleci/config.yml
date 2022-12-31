@@ -368,26 +368,28 @@ jobs:
       - run:
           name: Remove old stacks and files
           command: |
+            echo Stack names: "${STACKS[@]}" 
             CURRENT_WORKFLOW_ID="${CIRCLE_WORKFLOW_ID:0:7}"
+            echo Current workflow ID: "${CURRENT_WORKFLOW_ID}"
             for i in "${STACKS[@]}"
             do
-              if [[ "$i" == *"-${CURRENT_WORKFLOW_ID}" ]]
+              if [[ "${i}" == *"-${CURRENT_WORKFLOW_ID}" ]]
               then
+                echo Found stack "${i}" match current workflow ID
+              else
                 OldWorkflowID=${i:(-7)}
-                break
+                echo Old workflow ID: ${OldWorkflowID}
+                if [[ -n "${OldWorkflowID}" ]]
+                then
+                  echo "Cleaning up stacks with WorkflowID=${OldWorkflowID}"
+                  aws s3 rb "s3://udapeople-${OldWorkflowID}" --force
+                  aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
+                  aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
+                else
+                  echo "Unable to found old stacks. You may need to clean them up manually!"
+                fi
               fi
             done
-            if [[ -n "${OldWorkflowID}" ]]
-            then
-              echo "Cleaning up stacks with WorkflowID=${OldWorkflowID}"
-              aws s3 rb "s3://udapeople-${OldWorkflowID}" --force
-              aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
-              aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
-            else
-              echo "Unable to found old stacks. You may need to clean them up manually!"
-            fi
-
-            
 
 workflows:
   default:

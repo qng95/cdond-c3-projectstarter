@@ -359,18 +359,19 @@ jobs:
             curl --silent --location https://rpm.nodesource.com/setup_13.x | bash -
             yum install -y tar gzip python3 nodejs
       - run:
-          name: Get all stacks
+          name: Remove old stacks and files
           command: |
             # Fetch the stack names          
             export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
                     --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
-            echo Stack names: "${STACKS[@]}"          
-      - run:
-          name: Remove old stacks and files
-          command: |
             echo Stack names: "${STACKS[@]}" 
+
+            # Get current workflow ID
             CURRENT_WORKFLOW_ID="${CIRCLE_WORKFLOW_ID:0:7}"
             echo Current workflow ID: "${CURRENT_WORKFLOW_ID}"
+
+            # check for old stacks and remove them
+            FoundedOldWorkflowIDS=()
             for i in "${STACKS[@]}"
             do
               if [[ "${i}" == *"-${CURRENT_WORKFLOW_ID}" ]]
@@ -378,17 +379,27 @@ jobs:
                 echo Found stack "${i}" match current workflow ID
               else
                 OldWorkflowID=${i:(-7)}
-                echo Old workflow ID: ${OldWorkflowID}
+                echo Found old workflow ID: ${OldWorkflowID}
                 if [[ -n "${OldWorkflowID}" ]]
                 then
-                  echo "Cleaning up stacks with WorkflowID=${OldWorkflowID}"
-                  aws s3 rb "s3://udapeople-${OldWorkflowID}" --force
-                  aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
-                  aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
+                  if [[ ! " ${FoundedOldWorkflowIDS[*]} " =~ " ${OldWorkflowID} "]]
+                  then
+                    echo Append workflowID ${OldWorkflowID} into FoundedOldWorkflowIDS array
+                    FoundedOldWorkflowIDS+=("${OldWorkflowID}")
+                  fi
                 else
-                  echo "Unable to found old stacks. You may need to clean them up manually!"
+                  echo OldWorkflowID is empty
                 fi
               fi
+            done
+
+            echo All old workflow IDs: "${FoundedOldWorkflowIDS[@]}"
+            for i in "${FoundedOldWorkflowIDS[@]}"
+            do
+              echo "Cleaning up stacks with WorkflowID=${i}"
+              aws s3 rb "s3://udapeople-${i}" --force
+              aws cloudformation delete-stack --stack-name "udapeople-backend-${i}"
+              aws cloudformation delete-stack --stack-name "udapeople-frontend-${i}"
             done
 
 workflows:

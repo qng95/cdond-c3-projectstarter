@@ -362,8 +362,7 @@ jobs:
           name: Remove old stacks and files
           command: |
             # Fetch the stack names          
-            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
-                    --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
+            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
             echo Stack names: "${STACKS[@]}" 
 
             # Get current workflow ID
@@ -382,7 +381,7 @@ jobs:
                 echo Found old workflow ID: ${OldWorkflowID}
                 if [[ -n "${OldWorkflowID}" ]]
                 then
-                  if [[ ! " ${FoundedOldWorkflowIDS[*]} " =~ " ${OldWorkflowID} "]]
+                  if [[ ! " ${FoundedOldWorkflowIDS[*]} " =~ " ${OldWorkflowID} " ]]
                   then
                     echo Append workflowID ${OldWorkflowID} into FoundedOldWorkflowIDS array
                     FoundedOldWorkflowIDS+=("${OldWorkflowID}")
